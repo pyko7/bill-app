@@ -94,5 +94,49 @@ describe("Given I am connected as an employee", () => {
       expect(newBillForm).toBeTruthy()
     })
   })
+   describe("When an error occurs on API", () => {
+      beforeEach(() => {
+        jest.spyOn(store, "bills")
+        Object.defineProperty(
+            window,
+            'localStorage',
+            { value: localStorageMock }
+        )
+        window.localStorage.setItem('user', JSON.stringify({
+          type: 'Employee',
+          email: "e@e"
+        }))
+        const root = document.createElement("div")
+        root.setAttribute("id", "root")
+        document.body.appendChild(root)
+        router()
+      })
+      test("Then fetches bills from an API and fails with 404 message error", async () => {
+        store.bills.mockImplementationOnce(() => {
+          return {
+            list : () =>  {
+              return Promise.reject(new Error("Erreur 404"))
+            }
+          }})
+        window.onNavigate(ROUTES_PATH.Bills)
+        await new Promise(process.nextTick);
+        const message = await screen.getByTestId('error-message')
+        expect(message).toBeTruthy()
+      })
+  
+      test("Then fetches messages from an API and fails with 500 message error", async () => {
+        store.bills.mockImplementationOnce(() => {
+          return {
+            list : () =>  {
+              return Promise.reject(new Error("Erreur 500"))
+            }
+          }})
+  
+        window.onNavigate(ROUTES_PATH.Bills)
+        await new Promise(process.nextTick);
+        const message = await screen.getByTestId('error-message')
+        expect(message).toBeTruthy()
+      })
+    })
 })
 
