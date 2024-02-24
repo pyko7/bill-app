@@ -3,7 +3,7 @@
  */
 
 import {screen, waitFor} from "@testing-library/dom"
-import { ROUTES_PATH} from "../constants/routes.js";
+import { ROUTES, ROUTES_PATH } from "../constants/routes"
 import {localStorageMock} from "../__mocks__/localStorage.js";
 import store from "../__mocks__/store.js";
 
@@ -65,4 +65,34 @@ describe("Given I am connected as an employee", () => {
       expect(modal).toBeTruthy()
     })
   })
+  describe('When I click on new bill button', () => {
+    test('Then I should be sent to the new bills page containing a form', async () => {
+      Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+      window.localStorage.setItem('user', JSON.stringify({
+        type: 'Employee'
+      }))
+
+      const onNavigate = (pathname) => {
+        document.body.innerHTML = ROUTES({ pathname })
+      }
+      const BillClass = new Bills({
+        document,
+        onNavigate,
+        store,
+        localStorage: null
+      });
+      const bills = await BillClass.getBills();
+
+      document.body.innerHTML = BillsUI({data: bills, loading:null, error:null})
+
+      const newBillButton = screen.getByTestId("btn-new-bill")
+      const handleClickNewBill = jest.fn((e) => BillClass.handleClickNewBill())
+      newBillButton.addEventListener("click", handleClickNewBill)
+      userEvent.click(newBillButton)
+      expect(handleClickNewBill).toHaveBeenCalled()
+      const newBillForm = screen.queryByTestId("form-new-bill")
+      expect(newBillForm).toBeTruthy()
+    })
+  })
 })
+
