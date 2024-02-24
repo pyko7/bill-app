@@ -94,6 +94,25 @@ describe("Given I am connected as an employee", () => {
       expect(newBillForm).toBeTruthy()
     })
   })
+  describe("Given I am a user connected as employee", () => {
+    describe("When I navigate to the bills page", () => {
+      test("Then fetches bills from mock API GET", async () => {
+        localStorage.setItem("user", JSON.stringify({ type: "Employee", email: "e@e" }));
+        const root = document.createElement("div")
+        root.setAttribute("id", "root")
+        document.body.append(root)
+        router()
+        const billsContainer = new Bills({
+          document,
+          onNavigate,
+          store,
+          localStorage: window.localStorage,
+        });
+  
+        const billsList = await billsContainer.getBills();
+        expect(billsList.length).toBeGreaterThan(0);
+      })
+    })
    describe("When an error occurs on API", () => {
       beforeEach(() => {
         jest.spyOn(store, "bills")
@@ -138,5 +157,6 @@ describe("Given I am connected as an employee", () => {
         expect(message).toBeTruthy()
       })
     })
+  })
 })
 
