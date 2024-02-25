@@ -16,9 +16,16 @@ export default class NewBill {
     new Logout({ document, localStorage, onNavigate })
   }
   handleChangeFile = e => {
-    e.preventDefault()
-    const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
-    if(file.type !== "image/jpeg" || file.type !== "image/jpg" || file.type !== "image/png"){
+    const input = this.document.querySelector(`input[data-testid="file"]`)
+    const file = input.files[0]
+
+    if(file.type !== "image/jpeg" && file.type !== "image/jpg" && file.type !== "image/png"){
+      const errorMessage = document.createElement("span")
+      errorMessage.setAttribute('data-testid',"input-error-message")
+      errorMessage.style.color = "red"
+      errorMessage.textContent = "Seuls les formats JPEG, JPG et PNG sont acceptés."
+      input.after(errorMessage)
+      input.value = ""
       return
     }
     const filePath = e.target.value.split(/\\/g)
@@ -37,7 +44,6 @@ export default class NewBill {
         }
       })
       .then(({fileUrl, key}) => {
-        console.log(fileUrl)
         this.billId = key
         this.fileUrl = fileUrl
         this.fileName = fileName
