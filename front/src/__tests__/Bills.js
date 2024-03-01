@@ -45,6 +45,7 @@ describe("Given I am connected as an employee", () => {
   })
   describe("When I click on the eye icon", () => {
     test("Then a modal should open", async () => {
+      $.fn.modal = jest.fn(() => document.getElementById("modaleFile").classList.add("show"));
       const BillClass = new Bills({
         document,
         onNavigate,
@@ -55,13 +56,13 @@ describe("Given I am connected as an employee", () => {
 
       document.body.innerHTML = BillsUI({data: bills, loading:null, error:null})
 
-      const eyeIcon = screen.getAllByTestId('icon-eye')
-      const handleClickIconEye = jest.fn(() => BillClass.handleClickIconEye(eyeIcon[0]))
-      eyeIcon[0].addEventListener('click', handleClickIconEye)
-      userEvent.click(eyeIcon[0])
+      const eyeIcon = screen.getAllByTestId('icon-eye')[0]
+      const handleClickIconEye = jest.fn(() => BillClass.handleClickIconEye(eyeIcon))
+      eyeIcon.addEventListener('click', handleClickIconEye);
+      userEvent.click(eyeIcon)
       expect(handleClickIconEye).toHaveBeenCalled()
-      const modal = screen.getByTestId('modale-file')
-      expect(modal).toBeTruthy()
+      const modal = document.getElementById('modaleFile')
+      expect(modal.classList.contains('show')).toBeTruthy()
     })
   })
   describe('When I click on new bill button', () => {
