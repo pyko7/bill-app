@@ -45,16 +45,15 @@ describe("Given I am connected as an employee", () => {
   })
   describe("When I click on the eye icon", () => {
     test("Then a modal should open", async () => {
+      const bills = await store.bills().list();
       $.fn.modal = jest.fn(() => document.getElementById("modaleFile").classList.add("show"));
+      document.body.innerHTML = BillsUI({data: bills, loading:null, error:null})
       const BillClass = new Bills({
         document,
         onNavigate,
         store,
         localStorage: null
       });
-      const bills = await BillClass.getBills();
-
-      document.body.innerHTML = BillsUI({data: bills, loading:null, error:null})
 
       const eyeIcon = screen.getAllByTestId('icon-eye')[0]
       const handleClickIconEye = jest.fn(() => BillClass.handleClickIconEye(eyeIcon))
