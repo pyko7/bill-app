@@ -79,7 +79,7 @@ describe("Given I am connected as an employee", () => {
         const handleChangeFile = jest.spyOn(NewBillClass, "handleChangeFile");
 
         const fileInput = screen.getByTestId("file");
-        const file = new File(["file"], "example.jpg", {
+        const file = new File(["file"], "example.jpog", {
           type: "image/jpog",
         });
 

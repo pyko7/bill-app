@@ -15,19 +15,24 @@ export default class NewBill {
     this.billId = null
     new Logout({ document, localStorage, onNavigate })
   }
+
+    createErrorMessage(){
+    const existingErrorMessage = this.document.querySelector('span[data-testid="input-error-message"]')
+    if(existingErrorMessage){
+      existingErrorMessage.remove()
+    }
+    const errorMessage = document.createElement("span")
+    errorMessage.setAttribute('data-testid',"input-error-message")
+    errorMessage.style.color = "red"
+    errorMessage.textContent = "Seuls les formats JPEG, JPG et PNG sont acceptés."
+    return errorMessage
+  }
+
   handleChangeFile = e => {
     const input = this.document.querySelector(`input[data-testid="file"]`)
     const file = input.files[0]
+    const invalidFormat = file.type !== "image/jpeg" && file.type !== "image/jpg" && file.type !== "image/png"
 
-    if(file.type !== "image/jpeg" && file.type !== "image/jpg" && file.type !== "image/png"){
-      const errorMessage = document.createElement("span")
-      errorMessage.setAttribute('data-testid',"input-error-message")
-      errorMessage.style.color = "red"
-      errorMessage.textContent = "Seuls les formats JPEG, JPG et PNG sont acceptés."
-      input.after(errorMessage)
-      input.value = ""
-      return
-    }
     const filePath = e.target.value.split(/\\/g)
     const fileName = filePath[filePath.length-1]
     const formData = new FormData()
@@ -48,10 +53,15 @@ export default class NewBill {
         this.fileUrl = fileUrl
         this.fileName = fileName
       }).catch(error => console.error(error))
+
+    if(!invalidFormat)  {
+      const errorMessage = this.createErrorMessage()
+      input.after(errorMessage)
+      input.value = ""
+    }
   }
   handleSubmit = e => {
     e.preventDefault()
-    console.log('e.target.querySelector(`input[data-testid="datepicker"]`).value', e.target.querySelector(`input[data-testid="datepicker"]`).value)
     const email = JSON.parse(localStorage.getItem("user")).email
     const bill = {
       email,
